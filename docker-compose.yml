@@ -1,0 +1,47 @@
+version: "3.8"
+
+networks:
+  bridge:
+    driver: bridge
+    name: local
+
+volumes:
+  mongo-data:
+  node-modules-cache:
+
+services:
+  app:
+    image: zrp/node-functional-boilerplate:nightly
+    container_name: app
+    hostname: app
+    networks:
+      - bridge
+    build:
+      context: .
+      args:
+        APP_PATH: /home/node/app
+    env_file: .docker.env
+    volumes:
+      - ./:/home/node/app
+      - node-modules-cache:/home/node/app/node_modules
+    ports:
+      - 3000:3000
+      - 9229:9229
+    depends_on:
+      - mongo
+  
+  mongo:
+    container_name: mongo
+    hostname: mongo
+    networks:
+      - bridge
+    image: mongo
+    restart: always
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand({serverStatus:1}).ok' | mongo admin --quiet | grep 1
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
