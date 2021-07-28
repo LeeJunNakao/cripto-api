@@ -10,6 +10,7 @@
   "type": "module",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.21.1",
     "crocks": "^0.12.4",
     "express": "^4.17.1",
     "mongodb": "^4.0.0",

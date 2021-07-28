@@ -10,10 +10,7 @@ const CurrencySchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-    },
-    currentPrice: {
-      type: Number,
-      required: true,
+      unique: true,
     },
     quantity: {
       type: Number,
