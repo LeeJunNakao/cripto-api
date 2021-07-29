@@ -28,9 +28,9 @@ services:
       - 3000:3000
       - 9229:9229
     depends_on:
-      - mongo
+      - mongo_func_api
   
-  mongo:
+  mongo_func_api:
     container_name: mongo_func_api
     hostname: mongo
     networks:

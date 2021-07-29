@@ -1,6 +1,6 @@
 import express from 'express';
-import { connectDb } from './database.js';
-import routes from './routes.js';
+import { connectDb } from './src/database.js';
+import routes from './src/routes.js';
 
 const PORT = process.env.PORT;
 const app = express();
