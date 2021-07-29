@@ -1,49 +1,55 @@
 import axios from 'axios';
 import Async from 'crocks/Async/index.js';
-import bimap from 'crocks/pointfree/bimap.js';
 import Result from 'crocks/Result/index.js';
-import partial from 'crocks/helpers/partial.js';
 
 import CurrencyRepo from './repo.js';
-import { pipeAsync, getRepoErr } from './utils.js';
 import { toDomainCurrency } from './domain.js';
 
-const { Ok, Err } = Result;
+const { fromPromise } = Async;
+const { Err } = Result;
 
-const getCurrentPrice = (data) => {
-  const name = data.name;
-  const url = `https://api.coingecko.com/api/v3/coins/${name}`;
-  return Async((reject, resolve) => {
-    axios
-      .get(url)
-      .then((resp) => {
-        resolve(
-          Ok({ ...data, price: resp.data.market_data.current_price.brl }),
-        );
-      })
-      .catch(() => {
-        reject(Err({ message: 'get current price failed' }));
+const getCurrentPrice = (data, sendResponse) => {
+  const getError = () => ({ message: 'failed to get price currency' });
+  const sendError = () => sendResponse(getError());
+
+  data.bimap(sendError, (currency) => {
+    const name = currency.name;
+    const url = `https://api.coingecko.com/api/v3/coins/${name}`;
+    const getPrice = () => axios.get(url);
+    const sendCurrency = (response) =>
+      sendResponse({
+        ...currency,
+        price: response.data.market_data.current_price.brl,
       });
+
+    const setPrice = fromPromise(getPrice);
+    setPrice().fork(sendError, sendCurrency);
+    return currency;
   });
 };
 
-const createCurrency = (data, errCallback) => {
-  const addCurrency = () =>
-    Async((reject, resolve) => {
-      CurrencyRepo.add(data).fork(getRepoErr(reject), (resp) => {
-        resolve(toDomainCurrency(resp));
-      });
-    });
+const createCurrency = (data, sendResponse) => {
+  const getError = () => ({ message: 'failed to add currency' });
+  const sendError = () => sendResponse(getError());
+  const getPrice = (currency) => getCurrentPrice(currency, sendResponse);
 
-  return partial(pipeAsync, Ok(data), errCallback, addCurrency, () =>
-    getCurrentPrice(data),
-  );
+  return CurrencyRepo.add(data).map(toDomainCurrency).fork(sendError, getPrice);
 };
 
-const getCurrency = ({ name }) => {
-  return CurrencyRepo.findByName(name).map((data) =>
-    data ? toDomainCurrency : { message: 'currency not found' },
-  );
+const getCurrency = ({ name }, sendResponse) => {
+  const getData = (data) =>
+    data ? toDomainCurrency(data) : Err({ message: 'currency not found' });
+  const getResult = (response) => response.bimap(sendResponse, sendResponse);
+  const getPrice = (currency) => getCurrentPrice(currency, sendResponse);
+
+  return CurrencyRepo.findByName(name).map(getData).fork(getResult, getPrice);
 };
 
-export { createCurrency, getCurrency };
+const updateCurrency = ({ name, quantity }, sendResponse) => {
+  const getError = () => ({ message: 'failed to update currency' });
+  const sendError = () => sendResponse(getError());
+  const getUpdatedData = () => getCurrency({ name }, sendResponse);
+
+  CurrencyRepo.update({ name }, { quantity }).fork(sendError, getUpdatedData);
+};
+export { createCurrency, getCurrency, updateCurrency };

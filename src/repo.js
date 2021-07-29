@@ -32,6 +32,10 @@ const CurrencyRepo = ({ CurrencyModel }) => ({
     const getCurrency = fromPromise((name) => CurrencyModel.findOne({ name }));
     return getCurrency(name);
   },
+  update: (filter, value) => {
+    const updateCurrency = fromPromise(() => CurrencyModel.updateOne(filter, value));
+    return updateCurrency()
+  }
 });
 
 export default CurrencyRepo({ CurrencyModel });

@@ -8,14 +8,14 @@ const CurrencyDomain = object({
   quantity: number(),
 });
 
-const toDomainCurrency = ({ _id, name, currentPrice, quantity }) =>
-  Currency({
-    id: _id.toString(),
+const toDomainCurrency = ({ _id, name, currentPrice, quantity }) => {
+  return Currency({
+    id: _id && _id.toString(),
     name,
     currentPrice,
     quantity,
   });
-
+};
 
 const Currency = validate(CurrencyDomain);
 
