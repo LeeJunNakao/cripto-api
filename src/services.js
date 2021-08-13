@@ -28,21 +28,25 @@ const getCurrentPrice = (data, sendResponse) => {
   });
 };
 
-const createCurrency = (data, sendResponse) => {
+const createCurrency = (data) => {
   const getError = () => ({ message: 'failed to add currency' });
   const sendError = () => sendResponse(getError());
   const getPrice = (currency) => getCurrentPrice(currency, sendResponse);
 
-  return CurrencyRepo.add(data).map(toDomainCurrency).fork(sendError, getPrice);
+  return CurrencyRepo.add(data).map(toDomainCurrency);
 };
 
-const getCurrency = ({ name }, sendResponse) => {
+const getCurrency = ({ name }) => {
   const getData = (data) =>
-    data ? toDomainCurrency(data) : Err({ message: 'currency not found' });
+    data
+      ? { result: toDomainCurrency(data) }
+      : { error: Err({ message: 'currency not found' }) };
   const getResult = (response) => response.bimap(sendResponse, sendResponse);
   const getPrice = (currency) => getCurrentPrice(currency, sendResponse);
 
-  return CurrencyRepo.findByName(name).map(getData).fork(getResult, getPrice);
+  return CurrencyRepo.findByName(name).map(getData);
+
+  // return Async((reject, resolve) => resolve({ result: { name } }));
 };
 
 const updateCurrency = ({ name, quantity }, sendResponse) => {
@@ -50,6 +54,6 @@ const updateCurrency = ({ name, quantity }, sendResponse) => {
   const sendError = () => sendResponse(getError());
   const getUpdatedData = () => getCurrency({ name }, sendResponse);
 
-  CurrencyRepo.update({ name }, { quantity }).fork(sendError, getUpdatedData);
+  CurrencyRepo.update({ name }, { quantity });
 };
 export { createCurrency, getCurrency, updateCurrency };
