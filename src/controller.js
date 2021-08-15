@@ -17,9 +17,9 @@ const getRoute = curry((getCurrency, req, res) => {
 });
 
 const updateRoute = curry((updateCurrency, req, res) => {
-  updateCurrency(req.query).fork(
+  updateCurrency(req.body).fork(
     executeErrorHandler(res),
-    send(res, 200),
+    resolveResult(res, 200),
   );
 });
 

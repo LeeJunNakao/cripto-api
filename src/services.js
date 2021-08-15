@@ -1,6 +1,7 @@
 import axios from 'axios';
 import Async from 'crocks/Async/index.js';
 import Result from 'crocks/Result/index.js';
+import curry from 'crocks/helpers/curry.js';
 
 import CurrencyRepo from './repo.js';
 import { toDomainCurrency } from './domain.js';
@@ -18,7 +19,16 @@ const getCurrency = ({ name }) => {
   return CurrencyRepo.findByName(name).map(getData);
 };
 
-const updateCurrency = ({ name, quantity }) =>
-  CurrencyRepo.update({ name }, { quantity });
+const updateCurrency = ({ name, quantity }) => {
+  const resolveUpdate = curry((reject, resolve, _) =>
+    getCurrency({ name }).fork(reject, resolve),
+  );
 
+  return Async((reject, resolve) => {
+    CurrencyRepo.update({ name }, { quantity }).fork(
+      reject,
+      resolveUpdate(reject, resolve),
+    );
+  });
+};
 export { createCurrency, getCurrency, updateCurrency };
