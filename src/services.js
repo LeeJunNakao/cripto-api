@@ -8,21 +8,17 @@ import { toDomainCurrency } from './domain.js';
 const { Err } = Result;
 
 const createCurrency = (data) => {
-  return CurrencyRepo.add(data)
-    .map(toDomainCurrency)
-    .map((result) => ({ result }));
+  return CurrencyRepo.add(data).map(toDomainCurrency);
 };
 
 const getCurrency = ({ name }) => {
   const getData = (data) =>
-    data
-      ? { result: toDomainCurrency(data) }
-      : { error: Err({ message: 'currency not found' }) };
+    data ? toDomainCurrency(data) : Err({ message: 'currency not found' });
 
   return CurrencyRepo.findByName(name).map(getData);
 };
 
-const updateCurrency = ({ name, quantity }, sendResponse) =>
-  CurrencyRepo.update({ name }, { quantity }).map((result) => ({ result }));
+const updateCurrency = ({ name, quantity }) =>
+  CurrencyRepo.update({ name }, { quantity });
 
 export { createCurrency, getCurrency, updateCurrency };
