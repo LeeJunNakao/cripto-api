@@ -11,27 +11,22 @@ const executeErrorHandler = (error, res) =>
 const createRoute = curry((createCurrency, req, res) => {
   createCurrency(req.body).fork(
     ({ error }) => executeErrorHandler(error, res),
-    (result) => {
-      console.log('result', result);
-    },
+    ({ result }) => result.map(resolveAndSend(res, 201)),
   );
 });
-const getRoute = curry((getCurrency, req, res) =>
+const getRoute = curry((getCurrency, req, res) => {
   getCurrency(req.query).fork(
     ({ error }) => executeErrorHandler(error, res),
-    ({ result }) => {
-      console.log(result);
-      resolveAndSend(res, 200, result);
-    },
-  ),
-);
+    ({ result }) => result.map(resolveAndSend(res, 200)),
+  );
+});
 
-const updateRoute = curry((updateCurrency, req, res) =>
-  getCurrency(req.query).fork(
+const updateRoute = curry((updateCurrency, req, res) => {
+  updateCurrency(req.query).fork(
     ({ error }) => executeErrorHandler(error, res),
-    ({ result }) => resolveAndSend(res, 201, result),
-  ),
-);
+    ({ result }) => resolveAndSend(res, 200, result),
+  );
+});
 
 export default ({ createCurrency, getCurrency, updateCurrency }) =>
   Router()
