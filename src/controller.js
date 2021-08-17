@@ -2,21 +2,21 @@ import { Router } from 'express';
 import curry from 'crocks/helpers/curry.js';
 import { executeErrorHandler, resolveResult, send } from './utils.js';
 
-const createRoute = curry((createCurrency, req, res) =>
+const createRoute = curry((createCurrency, req, res, _) =>
   createCurrency(req.body).fork(
     executeErrorHandler(res),
     resolveResult(res, 201),
   ),
 );
 
-const getRoute = curry((getCurrency, req, res) =>
+const getRoute = curry((getCurrency, req, res, _) =>
   getCurrency(req.query).fork(
     executeErrorHandler(res),
     resolveResult(res, 200),
   ),
 );
 
-const updateRoute = curry((updateCurrency, req, res) =>
+const updateRoute = curry((updateCurrency, req, res, _) =>
   updateCurrency(req.body).fork(
     executeErrorHandler(res),
     resolveResult(res, 200),
