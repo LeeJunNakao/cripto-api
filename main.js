@@ -1,3 +1,5 @@
+/* eslint-disable fp/no-nil */
+/* eslint-disable fp/no-unused-expression */
 import express from 'express';
 import { connectDb } from './src/database.js';
 import routes from './src/routes.js';

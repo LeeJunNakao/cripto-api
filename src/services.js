@@ -1,4 +1,3 @@
-import axios from 'axios';
 import Async from 'crocks/Async/index.js';
 import Result from 'crocks/Result/index.js';
 import curry from 'crocks/helpers/curry.js';
@@ -24,11 +23,11 @@ const updateCurrency = ({ name, quantity }) => {
     getCurrency({ name }).fork(reject, resolve),
   );
 
-  return Async((reject, resolve) => {
+  return Async((reject, resolve) =>
     CurrencyRepo.update({ name }, { quantity }).fork(
       reject,
       resolveUpdate(reject, resolve),
-    );
-  });
+    ),
+  );
 };
 export { createCurrency, getCurrency, updateCurrency };
