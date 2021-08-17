@@ -4,12 +4,14 @@ import curry from 'crocks/helpers/curry.js';
 
 const { Ok, Err } = Result;
 
+// Object -> Array string
 const mapStructError = ({ failures }) =>
   [...failures()].map(
     ({ path, value, type }) =>
       `"${path}" with ${value} is invalid, expected type is: ${type}`,
   );
 
+// Struct -> Object -> Result
 const validateDomain = (struct) => (domainData) => {
   const [error, value] = validate(domainData, struct);
   return error
@@ -20,6 +22,7 @@ const validateDomain = (struct) => (domainData) => {
     : Ok(value);
 };
 
+// Error -> String
 const getRepoErr = (error) =>
   error.message.match(/duplicate key/)
     ? `duplicated key ${Object.keys(error.keyValue)}`

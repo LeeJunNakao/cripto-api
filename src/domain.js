@@ -10,13 +10,13 @@ const CurrencyDomain = object({
 
 const Currency = validate(CurrencyDomain);
 
-const toDomainCurrency = ({ _id, name, currentPrice, quantity }) => {
-  return Currency({
+// Object -> Result
+const toDomainCurrency = ({ _id, name, currentPrice, quantity }) =>
+  Currency({
     id: _id && _id.toString(),
     name,
     currentPrice,
     quantity,
   });
-};
 
 export { Currency, toDomainCurrency };

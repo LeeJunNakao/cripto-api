@@ -7,10 +7,10 @@ import { toDomainCurrency } from './domain.js';
 
 const { Err } = Result;
 
-const createCurrency = (data) => {
-  return CurrencyRepo.add(data).map(toDomainCurrency);
-};
+// currency :: Object ->  Async
+const createCurrency = (data) => CurrencyRepo.add(data).map(toDomainCurrency);
 
+// getCurrency :: Object ->  Async
 const getCurrency = ({ name }) => {
   const getData = (data) =>
     data ? toDomainCurrency(data) : Err({ message: 'currency not found' });
@@ -18,6 +18,7 @@ const getCurrency = ({ name }) => {
   return CurrencyRepo.findByName(name).map(getData);
 };
 
+// updateCurrency :: Object ->  Async
 const updateCurrency = ({ name, quantity }) => {
   const resolveUpdate = curry((reject, resolve, _) =>
     getCurrency({ name }).fork(reject, resolve),
