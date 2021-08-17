@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint . --ext .js",
+    "lint:fix": "eslint . --ext .js --fix"
   },
   "author": "",
   "type": "module",
@@ -12,9 +14,22 @@
   "dependencies": {
     "axios": "^0.21.1",
     "crocks": "^0.12.4",
+    "eslint-plugin-fp": "^2.3.0",
     "express": "^4.17.1",
     "mongodb": "^4.0.0",
     "mongoose": "^5.13.3",
     "superstruct": "^0.15.2"
+  },
+  "eslintConfig": {
+    "env": {
+      "es6": true
+    },
+    "plugins": [
+      "fp"
+    ],
+    "extends": "plugin:fp/recommended"
+  },
+  "devDependencies": {
+    "eslint": "^7.32.0"
   }
 }

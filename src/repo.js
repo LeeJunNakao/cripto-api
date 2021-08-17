@@ -17,25 +17,30 @@ const CurrencySchema = new mongoose.Schema(
       required: true,
     },
   },
-  { collection: 'currency' }
+  { collection: 'currency' },
 );
 
 const CurrencyModel = mongoose.model('Currency', CurrencySchema);
 
 const CurrencyRepo = ({ CurrencyModel }) => ({
+  // add :: Object -> Async
   add: (currencyData) => {
     const { name, currentPrice, quantity } = currencyData;
     const createCurrency = fromPromise((data) => CurrencyModel.create(data));
     return createCurrency({ name, currentPrice, quantity });
   },
+  // findByName :: String -> Async
   findByName: (name) => {
     const getCurrency = fromPromise((name) => CurrencyModel.findOne({ name }));
     return getCurrency(name);
   },
+  // update :: (Object, Object) -> Async
   update: (filter, value) => {
-    const updateCurrency = fromPromise(() => CurrencyModel.updateOne(filter, value));
-    return updateCurrency()
-  }
+    const updateCurrency = fromPromise(() =>
+      CurrencyModel.updateOne(filter, value),
+    );
+    return updateCurrency();
+  },
 });
 
 export default CurrencyRepo({ CurrencyModel });
